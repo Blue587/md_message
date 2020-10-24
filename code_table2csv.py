@@ -20,13 +20,10 @@ data_address = int.from_bytes(input_file.read(4 * mult), byteorder="little")
 length_of_text = int.from_bytes(end_of_text_address, byteorder="little") - 0x10 * mult
 
 input_file.seek(0x10 * mult)
-text = b"\x00" + input_file.read(length_of_text)
-text = text.split(b"\x00\x00")
-text = [x[1:] + b"\x00" for x in text]
-
-if sys.argv[2] == "rtdx":
-    del text[len(text)-3:]
-else:
+text = input_file.read(length_of_text)
+text = text.split(b"\x00\x00\x00")
+text = [x + b"\x00" for x in text]
+while text[-1] == b"\x00" or text[-1] == b"\x00\x00" or text[-1] == b"\x00\x00\x00":
     del text[-1]
 
 text = ["[" + x.decode("utf-16-le") + "]" for x in text]
