@@ -52,6 +52,7 @@ for filename in os.listdir(folderpath + foldername):
             hex_number = '{0:0{1}x}'.format(word,4)
             full_char = "0x" + hex_number
             zero_least_significant = "0x" + hex_number[0:2] + "00"
+            zero_most_significant = "0x00" + hex_number[2:5]
 
             if value_len > 0:
                 newtext += bytearray(str(hex_number), encoding="utf-16-le")
@@ -64,11 +65,19 @@ for filename in os.listdir(folderpath + foldername):
                         newtext += bytearray(":", encoding="utf-16-le")
 
             else:
-                if zero_least_significant in text_directives_dict:
-                    current_flag = flags_dict[zero_least_significant]
+                directive = True
+                if zero_least_significant in text_directives_dict or zero_most_significant in text_directives_dict:
+                    if zero_most_significant in text_directives_dict:
+                        current_flag = flags_dict[zero_most_significant]
+
+                    if zero_least_significant in text_directives_dict:
+                        current_flag = flags_dict[zero_least_significant]
 
                     if current_flag == "0x0000":
-                        newtext += text_directives_dict[full_char].encode("utf-16-le")
+                        if full_char in text_directives_dict:
+                            newtext += text_directives_dict[full_char].encode("utf-16-le")
+                        else:
+                            directive = False
 
                     if current_flag == "0x0001":
                         newtext += text_directives_dict[zero_least_significant][0:-1].encode("utf-16-le")
@@ -100,8 +109,10 @@ for filename in os.listdir(folderpath + foldername):
                 else:
                     newtext += int(hex_number, 16).to_bytes(2, byteorder="little")
 
+                if directive == False:
+                    newtext += int(hex_number, 16).to_bytes(2, byteorder="little")
+
         newtext = newtext.decode("utf-16-le")
-        print(newtext)
         os.makedirs(sys.argv[2] + "_" + foldername + "_output", exist_ok=True)
         outputfile = open(os.getcwd() + "/" + sys.argv[2] + "_" + foldername + "_output/" + filename[:-4] + ".txt", "w", encoding="utf-16-le")
         outputfile.write(newtext)
