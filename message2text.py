@@ -17,7 +17,7 @@ print("this program will convert all the files in the chosen \"message\" folder 
 
 print("argument 1: path to the input \"message\" folder")
 print("argument 2: name of the game (must match the text_directives file name)")
-print("argument 3: \"64-bit\" if the platform the game is for uses 64-bit addresses (such as the Switch), can be left blank otherwise")
+print("argument 3: \"64-bit\" if the game uses 64-bit addresses (such as RTDX), can be left blank otherwise")
 
 if len(sys.argv) == 3:
     mult = 1
